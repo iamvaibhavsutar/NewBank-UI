@@ -13,7 +13,6 @@ const axiosApi = axios.create({
 });
 let getToken = () => localStorage.getItem('token');
 
-// ✅ This is called from store.js after store is created
 export const setTokenGetter = (getter) => {
     getToken = getter;
 };

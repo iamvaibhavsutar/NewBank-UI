@@ -58,10 +58,10 @@ const TransferForm = () => {
     (acc) => acc.accountNumber === formData.toAccountNumber
   );
 
-  const hasInsufficientFunds =
+  const hasInsufficientFunds =  Boolean(
     formData.amount &&
     fromAccount &&
-    parseFloat(formData.amount) > parseFloat(fromAccount.balance);
+    parseFloat(formData.amount) > parseFloat(fromAccount.balance));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,7 +116,7 @@ const TransferForm = () => {
         <Button startIcon={<MdArrowBack />} onClick={() => navigate('/dashboard')} className="mb-6">
           Back to Dashboard
         </Button>
-
+        
         <Card className="shadow-hover">
           <CardContent className="p-6">
             <Box className="text-center mb-6">

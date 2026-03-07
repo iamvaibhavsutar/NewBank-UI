@@ -7,8 +7,11 @@ export const login = createAsyncThunk(
         try {
             const response = await axiosInstance.post("/auth/login", credentials);
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("refreshToken", response.data.refreshToken);
             return response.data;      
         } catch (error) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
             return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     }

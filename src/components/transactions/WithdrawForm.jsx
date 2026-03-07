@@ -94,8 +94,8 @@ const withdrawForm =() => {
             (acc) => acc.accountNumber === formData.accountNumber
         );
 
-        const hasInsufficientFunds =
-            formData.amount && selectedAccount && parseFloat(formData.amount) > parseFloat(selectedAccount.balance);
+        const hasInsufficientFunds = Boolean(
+            formData.amount && selectedAccount && parseFloat(formData.amount) > parseFloat(selectedAccount.balance));
 
         return (
             <div className='min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-8'>

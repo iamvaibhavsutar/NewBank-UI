@@ -40,7 +40,7 @@ const QuickActions = () => {
   return (
     <Grid container spacing={3}>
       {actions.map((action) => (
-        <Grid item xs={6} md={3} key={action.title}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={action.title}>
           <Card
             className="cursor-pointer hover:shadow-hover transition-all transform hover:scale-105"
             onClick={() => navigate(action.path)}

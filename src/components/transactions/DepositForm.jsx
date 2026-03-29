@@ -25,8 +25,8 @@ import { formatCurrency } from '../../utils/formatters';
 const DepositForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { account } = useSelector((state) => state.account);
-  const { loading } = useSelector((state) => state.transaction);
+  const account = useSelector((state) => state.account?.accounts || []);
+  const loading = useSelector((state) => state.transaction?.loading || false);
 
   const [formData, setFormData] = useState({
     accountNumber: '',
@@ -34,9 +34,12 @@ const DepositForm = () => {
     description: '',
   });
 
-  useEffect(() => {         
+  const token = useSelector((state) => state.auth.token);
+  useEffect(() => {
+    if(token){
     dispatch(fetchAccounts());
-  }, [dispatch]);   
+    }
+  }, [dispatch,token]);   
 
   useEffect(() => {
     if (account?.length > 0 && !formData.accountNumber) {
@@ -80,8 +83,9 @@ const DepositForm = () => {
 
     try {
       await dispatch(deposit(depositData)).unwrap();
+
       toast.success('Deposit submission successful!');
-      await dispatch(fetchAccounts());
+      await dispatch(fetchAccounts()).unwrap();
       navigate('/dashboard');
     } catch (error) {
       toast.error(error || 'Deposit failed');
@@ -156,7 +160,7 @@ const DepositForm = () => {
                 }}
               >
                 {account?.map((account) => (
-                  <MenuItem key={account.accountId} value={account.accountNumber}>
+                  <MenuItem key={account.id} value={account.accountNumber}>
                     <Box className="flex justify-between w-full">
                       <span>
                         {account.accountType} - {account.accountNumber}

@@ -5,13 +5,13 @@ import { formatCurrency, formatDate, getTransactionColor, getTransactionSign } f
 
 const EMPTY_ARRAY = [];
 const TransactionList = () => {
-  const { transactions, loading } = useSelector((state) => {
-    const transactions = state.transactions?.transactions;
-    return {
-      transactions: transactions !== undefined ? transactions : EMPTY_ARRAY,
-      loading: state.transactions?.loading || false,
-    };
-  });
+    const transactions = useSelector(
+      (state) => state.transaction?.transactions || []
+    );
+    const loading = useSelector(
+      (state) => state.transaction?.loading || false
+    );
+  
 
   const getIcon = (type) => {
     switch (type) {
@@ -45,40 +45,37 @@ const TransactionList = () => {
           </Typography>
         ) : (
           <Box className="space-y-3">
-            {transactions.slice(0, 10).map((transaction, index) => (
-              <Box key={transaction.id}>
-                <Box className="flex items-center justify-between py-2">
-                  <Box className="flex items-center gap-3">
-                    <Box className={`p-2 rounded-lg bg-${getTransactionColor(transaction.type)}-50`}>
-                      {getIcon(transaction.type)}
-                    </Box>
-                    <Box>
-                      <Typography variant="body1" className="font-semibold">
-                        {transaction.type}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {formatDate(transaction.transactionDate)}
-                      </Typography>
-                    </Box>
+           {transactions.slice(0, 10).map((transaction, index) => (
+              <Box key={transaction.transactionId || transaction.id || index}> 
+                  <Box className="flex items-center justify-between py-2">
+                      <Box className="flex items-center gap-3">
+                          <Box className={`p-2 rounded-lg`}>
+                              {getIcon(transaction.transactionType || transaction.type)}
+                          </Box>
+                          <Box>
+                              <Typography variant="body1" className="font-semibold">
+                                  {transaction.transactionType || transaction.type}
+                              </Typography>
+                              <Typography variant="caption" color="textSecondary">
+                                  {formatDate(transaction.transactionDate)}
+                              </Typography>
+                          </Box>
+                      </Box>
+                      <Box className="text-right">
+                          <Typography variant="h6" className="font-bold">
+                              {getTransactionSign(transaction.transactionType || transaction.type)}
+                              {formatCurrency(transaction.transactionAmount || transaction.amount)}
+                          </Typography>
+                          <Chip
+                              label={transaction.status}
+                              size="small"
+                              color={getTransactionColor(transaction.transactionType || transaction.type)}
+                          />
+                      </Box>
                   </Box>
-                  <Box className="text-right">
-                    <Typography
-                      variant="h6"
-                      className={`font-bold text-${getTransactionColor(transaction.type)}-600`}
-                    >
-                      {getTransactionSign(transaction.type)}
-                      {formatCurrency(transaction.amount)}
-                    </Typography>
-                    <Chip
-                      label={transaction.status}
-                      size="small"
-                      color={getTransactionColor(transaction.type)}
-                    />
-                  </Box>
-                </Box>
-                {index < transactions.slice(0, 10).length - 1 && <Divider />}
+                  {index < transactions.slice(0, 10).length - 1 && <Divider />}
               </Box>
-            ))}
+          ))}
           </Box>
         )}
       </CardContent>

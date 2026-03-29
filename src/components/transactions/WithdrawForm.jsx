@@ -26,8 +26,8 @@ import { formatCurrency } from '../../utils/formatters';
 const withdrawForm =() => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { account } = useSelector((state) => state.account);
-    const { loading } = useSelector((state) => state.transaction);
+    const account = useSelector((state) => state.account?.accounts || []);
+    const loading = useSelector((state) => state.transaction?.loading || false);
 
     const dailyLimit = 10000;
     const [formData, setFormData] = useState({
@@ -36,9 +36,12 @@ const withdrawForm =() => {
         description: '', 
     });
 
+    const token = useSelector((state) => state.auth.token);
     useEffect(() => {
-      //  dispatch(fetchAccounts());
-    }, [dispatch]);
+        if(token){
+        dispatch(fetchAccounts());
+        }
+    }, [dispatch,token]);
 
     useEffect(() => {
         if(account?.length > 0 && !formData.accountNumber) {
@@ -82,8 +85,9 @@ const withdrawForm =() => {
 
         try{
             await dispatch(withdraw(WithdrawData)).unwrap();
+
             toast.success('Withdraw submission Successful!');
-            await dispatch(fetchAccounts()); 
+            await dispatch(fetchAccounts()).unwrap(); 
             navigate('/dashboard');
         } catch(error){
             toast.error(error || 'Withdraw Failed');
@@ -159,7 +163,7 @@ const withdrawForm =() => {
                                     }}
                                 >
                                     {account?.map((account) => (
-                                    <MenuItem key={account.accountId} value={account.accountNumber}>
+                                    <MenuItem key={account.accountNumber} value={account.accountNumber}>
                                         <Box className="flex justify-between w-full">
                                         <span>
                                             {account.accountType} - {account.accountNumber}

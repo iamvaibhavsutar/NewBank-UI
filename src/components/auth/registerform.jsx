@@ -107,7 +107,7 @@ const RegisterForm = () => {
             {/* Registration Form */}
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Full Name"
@@ -125,7 +125,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Username"
@@ -143,7 +143,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Email"
@@ -162,7 +162,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Phone Number"
@@ -179,7 +179,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Password"
@@ -208,7 +208,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs:12, md:6 }}>
                   <TextField
                     fullWidth
                     label="Confirm Password"
@@ -237,7 +237,7 @@ const RegisterForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid size={{ xs:12 }}>
                   <Button
                     type="submit"
                     fullWidth

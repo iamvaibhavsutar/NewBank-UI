@@ -102,8 +102,9 @@ const TransferForm = () => {
 
     try {
       await dispatch(transfer(transferData)).unwrap();
+
       toast.success('Transfer successful!');
-      await dispatch(fetchAccounts());
+      await dispatch(fetchAccounts()).unwrap();
       navigate('/dashboard');
     } catch (error) {
       toast.error(error || 'Transfer failed');
@@ -116,7 +117,7 @@ const TransferForm = () => {
         <Button startIcon={<MdArrowBack />} onClick={() => navigate('/dashboard')} className="mb-6">
           Back to Dashboard
         </Button>
-        
+
         <Card className="shadow-hover">
           <CardContent className="p-6">
             <Box className="text-center mb-6">
@@ -217,7 +218,7 @@ const TransferForm = () => {
                 {accounts
                   ?.filter((acc) => acc.accountNumber !== formData.fromAccountNumber)
                   .map((acc) => (
-                    <MenuItem key={acc.id} value={acc.accountNumber}>
+                    <MenuItem key={acc.accountNumber} value={acc.accountNumber}>
                       <Box className="flex justify-between w-full">
                         <span>{acc.accountType} — {acc.accountNumber.slice(-6)}</span>
                         <span className="text-gray-500 ml-4">{formatCurrency(acc.balance)}</span>

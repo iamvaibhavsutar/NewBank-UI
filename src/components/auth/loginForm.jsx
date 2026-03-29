@@ -68,12 +68,12 @@ const LoginForm = () => {
             {/* Logo & Header */}
             <Box className="text-center mb-6">
               <div className="flex justify-center mb-4">
-                <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-4 rounded-full">
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-4 md:p-2 rounded-full">
                   <MdAccountBalance className="text-white text-5xl" />
                 </div>
               </div>
-              <Typography variant="h4" className="font-heading font-bold text-gray-800 mb-2">
-                Welcome Back
+              <Typography variant="h4" className="font-heading font-bold text-gray-800 mb-2 md:mb-5">
+                Welcome Back!
               </Typography>
               <Typography variant="body1" color="textSecondary">
                 Sign in to continue to your account

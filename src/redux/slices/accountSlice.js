@@ -39,7 +39,20 @@ const accountSlice = createSlice({
         },
         clearError: (state) => {
             state.error = null;
-        }
+        },
+        updateAccountBalance: (state, action) => {
+            const { accountNumber, newBalance } = action.payload;
+            const account = state.accounts.find(
+                (acc) => acc.accountNumber === accountNumber
+            );
+            if (account) {
+                account.balance = newBalance;
+            }
+
+            if (state.selectedAccount?.accountNumber === accountNumber) {
+                state.selectedAccount.balance = newBalance;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -71,5 +84,5 @@ const accountSlice = createSlice({
 
 });
 
-export const {selectAccount, clearError} = accountSlice.actions;
+export const {selectAccount, clearError, updateAccountBalance} = accountSlice.actions;
 export default accountSlice.reducer;

@@ -51,7 +51,7 @@ pipeline {
                 sh """
                 docker stop newbank-ui || true
                 docker rm newbank-ui || true
-                docker run -d -p 3000:80 --name newbank-ui $DOCKER_IMAGE:$DOCKER_TAG
+                docker run -d -p 0:80 --name newbank-ui $DOCKER_IMAGE:$DOCKER_TAG
                 """
             }
         }

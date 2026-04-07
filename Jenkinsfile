@@ -22,10 +22,15 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                sh "docker build -t $DOCKER_IMAGE:latest ."
-            }
+    steps {
+        script {
+            IMAGE_FULL = "${params.IMAGE_NAME}:${params.IMAGE_TAG}"
         }
+        sh '''
+        docker build --no-cache -t $IMAGE_FULL .
+        '''
+    }
+}
 
         stage('Push Image') {
             steps {

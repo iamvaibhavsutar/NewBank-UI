@@ -2,53 +2,71 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "vaibhav411007/newbank-ui"
+        IMAGE_NAME = "vaibhav411007/newbank-ui"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_FULL = "${IMAGE_NAME}:${IMAGE_TAG}"
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Clean Workspace') {
+            steps { cleanWs() }
+        }
+
+        stage('Checkout UI Code') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/iamvaibhavsutar/NewBank-UI.git'
             }
         }
 
-        stage('Build UI') {
+        stage('Build UI (Dockerized Node)') {
             steps {
-                sh 'npm install'
-                sh 'npm run build'
+                sh '''
+                mkdir -p .npm
+
+                docker run --rm \
+                -u $(id -u):$(id -g) \
+                -e HOME=/tmp \
+                -v $PWD:/app \
+                -v $PWD/.npm:/tmp/.npm \
+                -w /app \
+                node:20 \
+                sh -c "npm install --cache /tmp/.npm && npm run build"
+                '''
             }
         }
 
         stage('Build Docker Image') {
-    steps {
-        script {
-            IMAGE_FULL = "${params.IMAGE_NAME}:${params.IMAGE_TAG}"
+            steps {
+                sh 'docker build --no-cache -t $IMAGE_FULL .'
+            }
         }
-        sh '''
-        docker build --no-cache -t $IMAGE_FULL .
-        '''
-    }
-}
 
-        stage('Push Image') {
+        stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'USER',
-                    passwordVariable: 'PASS'
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh "docker push $DOCKER_IMAGE:latest"
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push $IMAGE_FULL
+                    '''
                 }
             }
         }
 
         stage('Trigger Deployment') {
             steps {
-                build job: 'newbank-deployment-pipeline'
+                build job: 'Newbank_deployment'
             }
         }
+    }
+
+    post {
+        success { echo "✅ UI Build Success" }
+        failure { echo "❌ UI Failed" }
     }
 }

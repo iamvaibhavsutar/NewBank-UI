@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 const axiosApi = axios.create({
-    baseURL:'http://localhost:8080/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || '/api' || 'http://localhost:8080/api',
     headers: {
         'Content-Type': 'application/json',
         
@@ -40,8 +40,7 @@ const processQueue = (error, token = null) => {
         } else {
             promise.resolve(token);
         }
-    });
-    failedQueue = [];
+    });    failedQueue = [];
 };
 
 axiosApi.interceptors.response.use(

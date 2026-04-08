@@ -2,67 +2,71 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "vaibhav411007/newbank-ui"
-        DOCKER_TAG = "latest"
+        IMAGE_NAME = "vaibhav411007/newbank-ui"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_FULL = "${IMAGE_NAME}:${IMAGE_TAG}"
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Clean Workspace') {
+            steps { cleanWs() }
+        }
+
+        stage('Checkout UI Code') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/iamvaibhavsutar/NewBank-UI.git'
             }
         }
 
-        stage('Build UI') {
+        stage('Build UI (Dockerized Node)') {
             steps {
-                sh 'npm install'
-                sh 'npm run build'
+                sh '''
+                mkdir -p .npm
+
+                docker run --rm \
+                -u $(id -u):$(id -g) \
+                -e HOME=/tmp \
+                -v $PWD:/app \
+                -v $PWD/.npm:/tmp/.npm \
+                -w /app \
+                node:20 \
+                sh -c "npm install --cache /tmp/.npm && npm run build"
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE:$DOCKER_TAG ."
+                sh 'docker build --no-cache -t $IMAGE_FULL .'
             }
         }
 
-        stage('Login to DockerHub') {
+        stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push $IMAGE_FULL
+                    '''
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Trigger Deployment') {
             steps {
-                sh "docker push $DOCKER_IMAGE:$DOCKER_TAG"
-            }
-        }
-
-        stage('Deploy UI') {
-            steps {
-                sh """
-                docker stop newbank-ui || true
-                docker rm newbank-ui || true
-                docker run -d -p 0:80 --name newbank-ui $DOCKER_IMAGE:$DOCKER_TAG
-                """
+                build job: 'Newbank_deployment'
             }
         }
     }
 
     post {
-        success {
-            echo '✅ UI Deployment Successful!'
-        }
-        failure {
-            echo '❌ UI Pipeline Failed!'
-        }
+        success { echo "✅ UI Build Success" }
+        failure { echo "❌ UI Failed" }
     }
 }
